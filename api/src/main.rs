@@ -1,6 +1,7 @@
 use poem::{
     get, handler, listener::TcpListener, post, web::{Json, Path}, Route, Server
 };
+use store::Store;
 
 use crate::{request_input::CreateWebsiteInput, request_output::CreateWebsiteOutput};
 pub mod request_input;
@@ -11,10 +12,11 @@ fn hello(Path(name): Path<String>) -> String {
 }
 
 #[handler]
-fn create_website(Json(data): Json<CreateWebsiteInput>) -> Json<CreateWebsiteOutput> {
-
+fn create_website(Json(_data): Json<CreateWebsiteInput>) -> Json<CreateWebsiteOutput> {
+    let s = Store{};
+    let id = s.create_website();
     let response = CreateWebsiteOutput {
-        id: data.url
+        id: id
     };
     Json(response)
 }

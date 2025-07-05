@@ -1,14 +1,14 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
+
+pub struct Store {
+
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+impl Store {
+    pub fn create_user(&self) {
+        print!("Create user called")
+    }
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
+    pub fn create_website(&self) -> String {
+        return "312432".to_string();
     }
 }
