@@ -1,3 +1,6 @@
+use std::env;
+
+use dotenvy::dotenv;
 use jsonwebtoken::{decode, DecodingKey, Validation};
 use poem::{
     http::StatusCode, Error, FromRequest, Request,
@@ -17,9 +20,11 @@ impl<'a> FromRequest<'a> for UserId {
             .ok_or_else(|| Error::from_string("Missing authorization header", StatusCode::UNAUTHORIZED))?;
 
         let token = auth_header.strip_prefix("Bearer ").unwrap_or(auth_header);
+        dotenv().ok();
+        let jwt_secret = env::var("JWT_SECRET").unwrap_or_else(|_| panic!("Please provide a jwt secret"));
         let decoded = decode::<Claims>(
             token,
-            &DecodingKey::from_secret("thisissupersecret".as_ref()),
+            &DecodingKey::from_secret(jwt_secret.as_ref()),
             &Validation::default(),
         )
         .map_err(|_| Error::from_string("Invalid token", StatusCode::UNAUTHORIZED))?;
