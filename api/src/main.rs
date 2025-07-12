@@ -11,6 +11,7 @@ use crate::routes::{user::{sign_in, sign_up}, website::{create_website, get_webs
 pub mod request_input;
 pub mod request_output;
 pub mod routes;
+pub mod middleware;
 
 #[handler]
 fn hello(Path(name): Path<String>) -> String {

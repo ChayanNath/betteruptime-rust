@@ -5,13 +5,16 @@ use poem::{
 };
 use store::store::Store;
 
-use crate::{request_input::{CreateWebsiteInput}, request_output::{CreateWebsiteOutput, GetWebsiteOutput}};
+use crate::{middleware::UserId, request_input::CreateWebsiteInput, request_output::{CreateWebsiteOutput, GetWebsiteOutput}};
 
 
 #[handler]
-pub fn create_website(Json(data): Json<CreateWebsiteInput>, Data(s): Data<&Arc<Mutex<Store>>>) -> Json<CreateWebsiteOutput> {
+pub fn create_website(
+    Json(data): Json<CreateWebsiteInput>, 
+    Data(s): Data<&Arc<Mutex<Store>>>,
+    UserId(user_id): UserId) -> Json<CreateWebsiteOutput> {
     let mut locked_s = s.lock().unwrap();
-    let website = locked_s.create_website(String::from("dd020379-1e62-44b2-8a3d-c4e17c30d044"), data.url).unwrap();
+    let website = locked_s.create_website(user_id, data.url).unwrap();
     let response = CreateWebsiteOutput {
         id: website.id
     };
@@ -19,8 +22,11 @@ pub fn create_website(Json(data): Json<CreateWebsiteInput>, Data(s): Data<&Arc<M
 }
  
 #[handler]
-pub fn get_website(Path(id): Path<String>, Data(s): Data<&Arc<Mutex<Store>>>) -> Json<GetWebsiteOutput> {
+pub fn get_website(
+    Path(id): Path<String>, 
+    Data(s): Data<&Arc<Mutex<Store>>>,
+    UserId(user_id): UserId) -> Json<GetWebsiteOutput> {
     let mut locked_s = s.lock().unwrap();
-    let website = locked_s.get_website(id).unwrap();
+    let website = locked_s.get_website(id, user_id).unwrap();
     Json(GetWebsiteOutput { url: website.url })
 }
