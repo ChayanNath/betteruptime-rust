@@ -28,5 +28,9 @@ pub fn get_website(
     UserId(user_id): UserId) -> Json<GetWebsiteOutput> {
     let mut locked_s = s.lock().unwrap();
     let website = locked_s.get_website(id, user_id).unwrap();
-    Json(GetWebsiteOutput { url: website.url })
+    Json(GetWebsiteOutput { 
+        url: website.url,
+        id: website.id,
+        user_id: website.user_id
+    })
 }
