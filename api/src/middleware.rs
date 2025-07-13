@@ -20,8 +20,11 @@ impl<'a> FromRequest<'a> for UserId {
             .ok_or_else(|| Error::from_string("Missing authorization header", StatusCode::UNAUTHORIZED))?;
 
         let token = auth_header.strip_prefix("Bearer ").unwrap_or(auth_header);
+        
         dotenv().ok();
-        let jwt_secret = env::var("JWT_SECRET").unwrap_or_else(|_| panic!("Please provide a jwt secret"));
+        let jwt_secret = env::var("JWT_SECRET")
+            .map_err(|_| Error::from_string("JWT_SECRET not set", StatusCode::INTERNAL_SERVER_ERROR))?;
+        
         let decoded = decode::<Claims>(
             token,
             &DecodingKey::from_secret(jwt_secret.as_ref()),
